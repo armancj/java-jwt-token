@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
 import java.security.PublicKey;
+import java.util.function.Function;
 
 public class JwtService {
     private static final String SECRET_KEY= "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
@@ -17,6 +18,11 @@ public class JwtService {
 
     private Claims extractAllClaims(String jwt) {
         return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(jwt).getPayload();
+    }
+
+    public <T> T extractClaim(String jwt, Function<Claims, T> claimsResolver){
+        final Claims claims = extractAllClaims(jwt);
+        return claimsResolver.apply(claims);
     }
 
     private SecretKey getSignInKey() {
